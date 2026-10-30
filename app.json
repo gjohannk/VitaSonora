@@ -1,0 +1,20 @@
+{
+  "expo": {
+    "name": "VitaSonora",
+    "slug": "vitasonora",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "backgroundColor": "#e7f6e8"
+    },
+    "android": {
+      "package": "com.vitasonora.app"
+    },
+    "web": {
+      "bundler": "metro",
+      "name": "VitaSonora"
+    }
+  }
+}

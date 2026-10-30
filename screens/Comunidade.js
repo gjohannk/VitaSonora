@@ -1,0 +1,7 @@
+import React from 'react';
+import {View,Text,StyleSheet} from 'react-native';
+import {Page,Heading,Card,Button} from '../components/UI';
+import {colors} from '../theme/colors';
+const temas=[{title:'A música na minha vida',body:'Compartilhe momentos em que uma canção marcou a sua história.'},{title:'Como a música ajuda na minha vida',body:'Um espaço para conversar sobre sentimentos, lembranças e bem-estar.'},{title:'A importância da música na infância',body:'Reflexões sobre a presença da música no desenvolvimento e no cotidiano.'}];
+export default function Comunidade({navigation}){return <Page><Heading>Comunidade</Heading><Text style={s.intro}>Histórias e conversas sobre a música e o bem-estar.</Text><View style={s.music}><Text style={s.symbol}>♫</Text></View><Heading size={24}>Blog</Heading>{temas.map((t,i)=><Card key={i} title={t.title} onPress={()=>navigation.navigate('História',{title:t.title,body:t.body})}>{t.body}</Card>)}<Heading size={24}>Comentários</Heading><Card title="Espaço de conversa">Na versão completa, usuários poderão comentar e trocar experiências sobre os relatos.</Card><Button label="Compartilhar minha história" onPress={()=>navigation.navigate('Entrar')}/></Page>}
+const s=StyleSheet.create({intro:{fontSize:17,color:'#454545',marginBottom:15},music:{backgroundColor:colors.medium,alignSelf:'center',width:170,height:145,borderRadius:25,alignItems:'center',justifyContent:'center',marginBottom:23},symbol:{fontSize:90,color:'#e7f8e9'}});
