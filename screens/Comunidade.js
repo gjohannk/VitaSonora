@@ -1,7 +1,13 @@
-import React from 'react';
-import {View,Text,StyleSheet} from 'react-native';
+import React,{useCallback,useState} from 'react';
+import {Text,View,TextInput,StyleSheet,ActivityIndicator,Alert} from 'react-native';
+import {useFocusEffect} from '@react-navigation/native';
 import {Page,Heading,Card,Button} from '../components/UI';
-import {colors} from '../theme/colors';
-const temas=[{title:'A música na minha vida',body:'Compartilhe momentos em que uma canção marcou a sua história.'},{title:'Como a música ajuda na minha vida',body:'Um espaço para conversar sobre sentimentos, lembranças e bem-estar.'},{title:'A importância da música na infância',body:'Reflexões sobre a presença da música no desenvolvimento e no cotidiano.'}];
-export default function Comunidade({navigation}){return <Page><Heading>Comunidade</Heading><Text style={s.intro}>Histórias e conversas sobre a música e o bem-estar.</Text><View style={s.music}><Text style={s.symbol}>♫</Text></View><Heading size={24}>Blog</Heading>{temas.map((t,i)=><Card key={i} title={t.title} onPress={()=>navigation.navigate('História',{title:t.title,body:t.body})}>{t.body}</Card>)}<Heading size={24}>Comentários</Heading><Card title="Espaço de conversa">Na versão completa, usuários poderão comentar e trocar experiências sobre os relatos.</Card><Button label="Compartilhar minha história" onPress={()=>navigation.navigate('Entrar')}/></Page>}
-const s=StyleSheet.create({intro:{fontSize:17,color:'#454545',marginBottom:15},music:{backgroundColor:colors.medium,alignSelf:'center',width:170,height:145,borderRadius:25,alignItems:'center',justifyContent:'center',marginBottom:23},symbol:{fontSize:90,color:'#e7f8e9'}});
+import {api} from '../services/api';
+const temas=['Bem-estar','Memórias','Infância','Outros'];
+export default function Comunidade({navigation}){
+ const [relatos,setRelatos]=useState([]),[loading,setLoading]=useState(true),[erro,setErro]=useState('');
+ const carregar=useCallback(async()=>{setLoading(true);try{setRelatos(await api('/api/relatos'));setErro('');}catch(e){setErro(e.message)}finally{setLoading(false)}},[]);
+ useFocusEffect(useCallback(()=>{carregar()},[carregar]));
+ return <Page><Heading>Comunidade</Heading><Text style={s.intro}>A música transforma vidas. Leia relatos reais e compartilhe sua história.</Text><Button label="Compartilhar um relato" onPress={()=>navigation.navigate('Novo relato')}/><Button outline label="Atualizar relatos" onPress={carregar}/>{loading&&<ActivityIndicator color="#287e35"/>}{!!erro&&<Text style={s.error}>{erro}</Text>}{!loading&&!relatos.length&&!erro&&<Text>Nenhum relato ainda. Seja o primeiro!</Text>}{relatos.map(item=><Card key={item.id} title={item.titulo} onPress={()=>navigation.navigate('Relato',{id:item.id})}>{`${item.autor_nome} · ${item.tema}\n${item.conteudo.slice(0,180)}`}</Card>)}</Page>;
+}
+const s=StyleSheet.create({intro:{fontSize:16,marginBottom:14,color:'#445'},error:{color:'#b42318',margin:12}});

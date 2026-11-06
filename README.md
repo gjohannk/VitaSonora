@@ -1,49 +1,33 @@
-# VitaSonora — Entrega 1
+# VitaSonora — Entrega 2
 
-Aplicação **React Native + Expo** inspirada no protótipo do Canva. Tema: uso da música como ponto de partida para conversas, relatos e conscientização sobre bem-estar emocional (**ODS 3**).
+Aplicativo mobile para compartilhamento de relatos sobre o impacto da música no bem-estar, inspirado no ODS 3. Continuação da Entrega 1 (interface e navegação).
 
-## Como executar
+## O que funciona nesta etapa
+- React Native + Expo e React Navigation com telas de Início, Comunidade, Relato, Novo relato, Sobre, Contato e prévia visual de Entrar.
+- API REST Node.js/Express com `GET /api/saude`, `GET /api/relatos`, `GET /api/relatos/:id`, `POST /api/relatos`.
+- MySQL com tabela `relatos`; integração da tela de comunidade com `fetch` via `services/api.js`.
+- Inserção e consulta de dados reais. Login, JWT, níveis e CRUD completo ficam para Entrega 3.
 
-Requisitos: Node.js LTS e Expo Go (para testar no celular) ou navegador.
+## Pré-requisitos
+Node.js 20+, MySQL 8+, Expo Go ou emulador Android.
 
-```bash
-npm install
-npx expo start
+## Executar
+1. Importe `database/vitasonora.sql` no MySQL Workbench (ou use `mysql -u root -p < database/vitasonora.sql`).
+2. Em `backend/`: `npm install`; copie `.env.example` para `.env` e configure `DB_USER`, `DB_PASSWORD`; rode `npm run dev`.
+3. Na raiz do projeto: `npm install`; copie `.env.example` para `.env`, configure `EXPO_PUBLIC_API_URL=http://IP_DO_SEU_PC:3000`; rode `npx expo start --clear`.
+4. O celular e o computador devem estar na mesma rede. Android Emulator usa por padrão `http://10.0.2.2:3000`; no navegador normalmente `http://localhost:3000`.
+
+## Testes manuais
+- Acesse `http://localhost:3000/api/saude` e verifique `status: ok`.
+- Abra Comunidade e veja os relatos do MySQL.
+- Publique um relato e confira se apareceu em Comunidade e na tabela `relatos`.
+- Desligue a API para verificar a mensagem de erro.
+
+## GitHub
+Faça commits e push reais no SEU repositório (o ZIP não publica arquivos automaticamente):
 ```
-
-No terminal do Expo, pressione **w** para abrir no navegador ou leia o QR Code com o Expo Go. Se necessário: `npm run web`.
-
-## Telas navegáveis
-- Início
-- Cadastrar / Entrar (formulários demonstrativos; sem persistência)
-- Comunidade
-- História
-- Sobre
-- Contato
-
-## Organização
-- `App.js`: rotas e React Navigation
-- `screens/`: telas
-- `components/UI.js`: componentes reutilizáveis
-- `theme/colors.js`: identidade visual
-- `docs/PROPOSTA_ENTREGA_1.md`: planejamento exigido pela avaliação
-
-## Escopo e limitações
-Esta entrega é **somente a primeira etapa**: o cadastro e o login ainda não comunicam com servidor; alertas avisam que estão em desenvolvimento. API, MySQL, JWT, hash, CRUD e controle de níveis só entram nas etapas posteriores. Os textos do blog são exemplos de interface, não relatos reais.
-
-## Repositório Git — obrigatório para avaliação
-O ZIP não cria nem publica o repositório remoto automaticamente. No diretório do projeto:
-
-```bash
-git init
 git add .
-git commit -m "Entrega 1: estrutura Expo e navegacao VitaSonora"
-git branch -M main
-git remote add origin https://github.com/SEU-USUARIO/vitasonora.git
-git push -u origin main
+git commit -m "Entrega 2 - MySQL API e listagem/publicacao de relatos"
+git push
 ```
-
-Antes do push, crie um repositório **vazio** no GitHub e substitua `SEU-USUARIO` pelo seu usuário. Não envie arquivos `.env` com segredos. Confira o repositório remoto após enviar, como pede o PDF.
-
-## Referências do planejamento
-Documento Projeto PI e três telas enviadas pelo aluno, além do PDF Projeto Avaliativo — seção Entrega 1. O projeto `loja-jwt` foi usado apenas como referência de organização técnica, sem copiar sua aplicação de loja.
+Nunca publique `.env` ou `node_modules`.
