@@ -1,13 +1,31 @@
 CREATE DATABASE IF NOT EXISTS vitasonora_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE vitasonora_db;
+CREATE TABLE IF NOT EXISTS usuarios (
+ id INT AUTO_INCREMENT PRIMARY KEY,
+ nome VARCHAR(90) NOT NULL,
+ usuario VARCHAR(50) NOT NULL UNIQUE,
+ email VARCHAR(180) NOT NULL UNIQUE,
+ cpf VARCHAR(11) NULL UNIQUE,
+ senha_hash VARCHAR(255) NOT NULL,
+ nivel ENUM('usuario','admin') NOT NULL DEFAULT 'usuario',
+ criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
 CREATE TABLE IF NOT EXISTS relatos (
  id INT AUTO_INCREMENT PRIMARY KEY,
- autor_nome VARCHAR(90) NOT NULL,
+ usuario_id INT NOT NULL,
  titulo VARCHAR(150) NOT NULL,
  conteudo TEXT NOT NULL,
  tema VARCHAR(80) NOT NULL DEFAULT 'Bem-estar',
- criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+ criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ atualizado_em TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+ CONSTRAINT fk_relato_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
-INSERT INTO relatos (autor_nome,titulo,conteudo,tema)
-SELECT 'Comunidade VitaSonora','A música na minha vida','A música pode acompanhar momentos marcantes e aproximar pessoas.','Memórias'
-WHERE NOT EXISTS(SELECT 1 FROM relatos WHERE titulo='A música na minha vida');
+CREATE TABLE IF NOT EXISTS comentarios (
+ id INT AUTO_INCREMENT PRIMARY KEY,
+ relato_id INT NOT NULL,
+ usuario_id INT NOT NULL,
+ texto VARCHAR(1000) NOT NULL,
+ criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ CONSTRAINT fk_comentario_relato FOREIGN KEY (relato_id) REFERENCES relatos(id) ON DELETE CASCADE,
+ CONSTRAINT fk_comentario_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);

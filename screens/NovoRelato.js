@@ -1,10 +1,12 @@
-import React,{useState} from 'react';
-import {TextInput,Alert,Text,StyleSheet} from 'react-native';
+import React,{useEffect,useState} from 'react';
+import {TextInput,Text,StyleSheet,ActivityIndicator} from 'react-native';
 import {Page,Heading,Button} from '../components/UI';
 import {api} from '../services/api';
-export default function NovoRelato({navigation}){
- const [autor,setAutor]=useState(''),[titulo,setTitulo]=useState(''),[conteudo,setConteudo]=useState(''),[tema,setTema]=useState('Bem-estar'),[salvando,setSalvando]=useState(false),[erro,setErro]=useState('');
- async function salvar(){if(!autor.trim()||!titulo.trim()||!conteudo.trim()){setErro('Preencha autor, título e relato.');return}setSalvando(true);try{await api('/api/relatos',{method:'POST',body:{autor_nome:autor,titulo,conteudo,tema}});navigation.navigate('Comunidade');}catch(e){setErro(e.message)}finally{setSalvando(false)}}
- return <Page><Heading>Novo relato</Heading><Text>Na Entrega 2, os relatos são públicos e não exigem login.</Text><TextInput style={s.input} placeholder="Seu nome" value={autor} onChangeText={setAutor}/><TextInput style={s.input} placeholder="Título" value={titulo} onChangeText={setTitulo}/><TextInput style={s.input} placeholder="Tema (bem-estar, infância...)" value={tema} onChangeText={setTema}/><TextInput style={[s.input,s.area]} multiline placeholder="Como a música marcou sua vida?" value={conteudo} onChangeText={setConteudo}/>{!!erro&&<Text style={s.error}>{erro}</Text>}<Button label={salvando?'Publicando...':'Publicar relato'} onPress={salvar}/></Page>
+import {useAuth} from '../context/AuthContext';
+export default function NovoRelato({navigation,route}){
+ const id=route.params?.id;const {usuario}=useAuth();const [titulo,setTitulo]=useState(''),[conteudo,setConteudo]=useState(''),[tema,setTema]=useState('Bem-estar'),[erro,setErro]=useState(''),[busy,setBusy]=useState(false);
+ useEffect(()=>{if(id)api(`/api/relatos/${id}`).then(r=>{setTitulo(r.titulo);setConteudo(r.conteudo);setTema(r.tema)}).catch(e=>setErro(e.message));},[id]);
+ async function salvar(){if(!usuario){navigation.navigate('Entrar');return}setBusy(true);setErro('');try{await api(id?`/api/relatos/${id}`:'/api/relatos',{method:id?'PUT':'POST',body:{titulo,conteudo,tema}});navigation.navigate('Comunidade')}catch(e){setErro(e.message)}finally{setBusy(false)}}
+ return <Page><Heading>{id?'Editar relato':'Novo relato'}</Heading>{!usuario&&<Text>Entre na sua conta para publicar.</Text>}<TextInput style={s.input} placeholder="Título" value={titulo} onChangeText={setTitulo}/><TextInput style={s.input} placeholder="Tema" value={tema} onChangeText={setTema}/><TextInput style={[s.input,{minHeight:155,textAlignVertical:'top'}]} multiline placeholder="Conte sua história com a música" value={conteudo} onChangeText={setConteudo}/>{!!erro&&<Text style={{color:'#b42318'}}>{erro}</Text>}<Button label={busy?'Salvando...':id?'Salvar alterações':'Publicar relato'} onPress={busy?()=>{}:salvar}/></Page>
 }
-const s=StyleSheet.create({input:{borderWidth:1,borderColor:'#83b789',borderRadius:12,padding:12,marginVertical:9,backgroundColor:'#fff',fontSize:16},area:{minHeight:145,textAlignVertical:'top'},error:{color:'#b42318'}});
+const s=StyleSheet.create({input:{padding:13,backgroundColor:'#fff',borderColor:'#83b789',borderWidth:1,borderRadius:12,marginVertical:10,fontSize:16}});

@@ -6,3 +6,8 @@ web-build/
 backend/.env
 *.log
 .DS_Store
+
+# Arquivos privados
+.env
+.env.*
+!.env.example

@@ -1,33 +1,73 @@
-# VitaSonora — Entrega 2
+# VitaSonora — Entrega 3
 
-Aplicativo mobile para compartilhamento de relatos sobre o impacto da música no bem-estar, inspirado no ODS 3. Continuação da Entrega 1 (interface e navegação).
+Aplicação mobile sobre o impacto da música no bem-estar (ODS 3), construída sobre a Entrega 2. A loja JWT fornecida foi usada como referência de arquitetura, não como tema copiado.
 
-## O que funciona nesta etapa
-- React Native + Expo e React Navigation com telas de Início, Comunidade, Relato, Novo relato, Sobre, Contato e prévia visual de Entrar.
-- API REST Node.js/Express com `GET /api/saude`, `GET /api/relatos`, `GET /api/relatos/:id`, `POST /api/relatos`.
-- MySQL com tabela `relatos`; integração da tela de comunidade com `fetch` via `services/api.js`.
-- Inserção e consulta de dados reais. Login, JWT, níveis e CRUD completo ficam para Entrega 3.
+## Recursos implementados
+- Expo + React Navigation, comunidade, formulário de relato, detalhes, edição, exclusão, comentários e cadastro/login.
+- API REST Node.js + Express + MySQL.
+- Cadastro com senha armazenada com `bcryptjs` (hash, 12 rounds). Login com comparação do hash.
+- JWT assinado com expiração de 8 horas, enviado como `Authorization: Bearer <token>`.
+- Sessão local em `AsyncStorage`, `GET /api/auth/me` na abertura e logout local.
+- Dois níveis: **usuario** (cria relatos, edita/remove apenas os seus, comenta e remove seus comentários), **admin** (pode editar/excluir quaisquer relatos e comentários e administrar níveis de terceiros).
+- Permissões verificadas no BACK-END, não apenas em botões da interface.
+- CRUD completo da entidade principal `relatos`: GET, POST, PUT e DELETE.
+- Comentários GET, POST e DELETE; usuários GET e PATCH nível para admin.
 
-## Pré-requisitos
-Node.js 20+, MySQL 8+, Expo Go ou emulador Android.
+## Preparar MySQL
+1. É recomendado criar uma base **vazia**, importar `database/vitasonora.sql` pelo MySQL Workbench ou `mysql -u root -p < database/vitasonora.sql`.
+2. **Atenção**: esquema da Entrega 2 não é compatível automaticamente com o da Entrega 3. Leia `database/MIGRACAO_DA_ENTREGA_2.md` para preservar dados.
 
-## Executar
-1. Importe `database/vitasonora.sql` no MySQL Workbench (ou use `mysql -u root -p < database/vitasonora.sql`).
-2. Em `backend/`: `npm install`; copie `.env.example` para `.env` e configure `DB_USER`, `DB_PASSWORD`; rode `npm run dev`.
-3. Na raiz do projeto: `npm install`; copie `.env.example` para `.env`, configure `EXPO_PUBLIC_API_URL=http://IP_DO_SEU_PC:3000`; rode `npx expo start --clear`.
-4. O celular e o computador devem estar na mesma rede. Android Emulator usa por padrão `http://10.0.2.2:3000`; no navegador normalmente `http://localhost:3000`.
-
-## Testes manuais
-- Acesse `http://localhost:3000/api/saude` e verifique `status: ok`.
-- Abra Comunidade e veja os relatos do MySQL.
-- Publique um relato e confira se apareceu em Comunidade e na tabela `relatos`.
-- Desligue a API para verificar a mensagem de erro.
-
-## GitHub
-Faça commits e push reais no SEU repositório (o ZIP não publica arquivos automaticamente):
+## Iniciar API
 ```
-git add .
-git commit -m "Entrega 2 - MySQL API e listagem/publicacao de relatos"
-git push
+cd backend
+npm install
 ```
-Nunca publique `.env` ou `node_modules`.
+Copie `backend/.env.example` para `backend/.env`. Configure banco e `JWT_SECRET` único com **ao menos 32 caracteres aleatórios** (não publique este segredo).
+```
+npm run dev
+```
+API disponível em `http://localhost:3000/api/saude`.
+
+## Iniciar aplicativo
+Na raiz: `npm install`. Copie `.env.example` para `.env` e substitua o endereço em `EXPO_PUBLIC_API_URL` pelo IPv4 local do computador, por exemplo `http://192.168.1.100:3000`. No celular, use a **mesma rede Wi-Fi** do computador. Não use `localhost` no celular. Depois execute `npx expo start --clear`.
+
+## Primeiro administrador
+Crie uma conta comum no aplicativo. No terminal da pasta `backend`, execute:
+```
+npm run admin -- admin@exemplo.com
+```
+Substitua pelo e-mail da conta cadastrada. **Saia e entre novamente no app** para atualizar a sessão e o nível exibido. A API verifica o nível atual no banco para cada chamada autenticada.
+
+## Principais rotas
+| Método | Rota | Acesso |
+|---|---|---|
+| GET | /api/saude | público |
+| POST | /api/auth/cadastro | público |
+| POST | /api/auth/login | público |
+| GET | /api/auth/me | logado |
+| GET | /api/relatos | público |
+| GET | /api/relatos/:id | público |
+| POST | /api/relatos | logado |
+| PUT | /api/relatos/:id | autor ou admin |
+| DELETE | /api/relatos/:id | autor ou admin |
+| GET | /api/relatos/:id/comentarios | público |
+| POST | /api/relatos/:id/comentarios | logado |
+| DELETE | /api/comentarios/:id | autor ou admin |
+| GET | /api/usuarios | admin |
+| PATCH | /api/usuarios/:id/nivel | admin |
+
+## Teste manual de permissões
+1. Crie duas contas; ambas começam no nível `usuario`.
+2. Entre com A, crie um relato, edite e exclua seu próprio relato.
+3. Entre com B, abra relato de A: não deve aparecer opção de editar; a API responde HTTP 403 se B tentar `PUT`/`DELETE` diretamente.
+4. Comente autenticado; confirme que visitante sem token não publica.
+5. Promova uma conta a `admin` pelo comando acima, faça login de novo e verifique a tela Usuários e moderação.
+6. Tente acessar `GET /api/usuarios` sem token: deve retornar 401; com usuário comum: 403.
+
+## Segurança e observações
+- Cadastro público jamais escolhe nível `admin`; nível é definido no servidor.
+- O campo CPF é **opcional** e é guardado em texto (sem criptografia): para publicação real, revisar necessidade, consentimento, política de retenção e proteção de dados pessoais. Este projeto é demonstrativo escolar.
+- `AsyncStorage` permite demonstração da sessão, mas não é armazenamento criptografado. Em produto real prefira armazenamento seguro.
+- O logout remove o token do dispositivo; JWT previamente emitido pode continuar válido até vencer (8h), pois não há lista de revogação.
+- Avaliação precisa de execução local com MySQL; não há dados reais ou credenciais inclusos.
+- Para GitHub, não envie `.env`, credenciais ou `node_modules` e faça commit/push no seu próprio repositório.
