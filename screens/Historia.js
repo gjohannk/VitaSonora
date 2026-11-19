@@ -123,7 +123,7 @@ export default function Historia({ route, navigation }) {
       {!!erro && <Text style={s.erro}>{erro}</Text>}
 
       {!relato ? (
-        <ActivityIndicator />
+        erro ? null : <ActivityIndicator />
       ) : (
         <>
           <Heading>{relato.titulo}</Heading>
@@ -139,7 +139,7 @@ export default function Historia({ route, navigation }) {
           {podeEditar && (
             <>
               <Button
-                label="Editar meu relato"
+                label="Editar relato"
                 onPress={() =>
                   navigation.navigate('Novo relato', { id })
                 }

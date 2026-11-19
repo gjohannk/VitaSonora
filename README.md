@@ -1,6 +1,6 @@
-# VitaSonora — Entrega 4 (versão final em preparação)
+# VitaSonora — Entrega 4
 
-Aplicação mobile sobre o impacto da música no bem-estar (ODS 3), construída sobre a Entrega 2. A loja JWT fornecida foi usada como referência de arquitetura, não como tema copiado.
+VitaSonora é uma comunidade escolar sobre música e bem-estar emocional, relacionada ao ODS 3. O projeto oferece um espaço de expressão e acolhimento para quem deseja compartilhar experiências com música, encontrar histórias em comum e conversar com outras pessoas.
 
 ## Recursos implementados
 - Expo + React Navigation, comunidade, formulário de relato, detalhes, edição, exclusão, comentários e cadastro/login.
@@ -20,7 +20,7 @@ Aplicação mobile sobre o impacto da música no bem-estar (ODS 3), construída 
 ## Iniciar API
 ```
 cd backend
-npm install
+npm ci
 ```
 Copie `backend/.env.example` para `backend/.env`. Configure banco e `JWT_SECRET` único com **ao menos 32 caracteres aleatórios** (não publique este segredo).
 ```
@@ -29,14 +29,20 @@ npm run dev
 API disponível em `http://localhost:3000/api/saude`.
 
 ## Iniciar aplicativo
-Na raiz: `npm install`. Copie `.env.example` para `.env` e substitua o endereço em `EXPO_PUBLIC_API_URL` pelo IPv4 local do computador, por exemplo `http://192.168.1.100:3000`. No celular, use a **mesma rede Wi-Fi** do computador. Não use `localhost` no celular. Depois execute `npx expo start --clear`.
+
+Na raiz, execute `npm ci` e `npx expo start --web` para usar o navegador do computador com a API local. Para Expo Go no celular, configure `EXPO_PUBLIC_API_URL` no `.env` da raiz com o endereço da API acessível ao aparelho e execute `npx expo start --clear`. Para rede local, mantenha ambos na mesma rede Wi-Fi. Veja os passos para APK em `docs/BUILD_APK.md`.
+
+O frontend usa a variável pública `EXPO_PUBLIC_API_URL`. O backend usa `PORT`, `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` e `JWT_SECRET` em `backend/.env`. Use `npm ci` na raiz e em `backend` para seguir os lockfiles.
 
 ## Primeiro administrador
-Crie uma conta comum no aplicativo. No terminal da pasta `backend`, execute:
+
+Cadastre a conta de demonstração e abra o MySQL Workbench conectado a `vitasonora_db`. Confirme o e-mail antes de promover a conta e substitua o valor abaixo pelo e-mail correto.
+
+```sql
+UPDATE usuarios SET nivel = 'admin' WHERE email = 'admin@exemplo.com';
 ```
-npm run admin -- admin@exemplo.com
-```
-Substitua pelo e-mail da conta cadastrada. **Saia e entre novamente no app** para atualizar a sessão e o nível exibido. A API verifica o nível atual no banco para cada chamada autenticada.
+
+Saia e entre novamente para atualizar o perfil exibido. A API consulta o nível atual no banco em cada requisição autenticada.
 
 ## Principais rotas
 | Método | Rota | Acesso |
@@ -61,7 +67,7 @@ Substitua pelo e-mail da conta cadastrada. **Saia e entre novamente no app** par
 2. Entre com A, crie um relato, edite e exclua seu próprio relato.
 3. Entre com B, abra relato de A: não deve aparecer opção de editar; a API responde HTTP 403 se B tentar `PUT`/`DELETE` diretamente.
 4. Comente autenticado; confirme que visitante sem token não publica.
-5. Promova uma conta a `admin` pelo comando acima, faça login de novo e verifique a tela Usuários e moderação.
+5. Promova uma conta a `admin` pela instrução SQL acima, faça login de novo e verifique a tela Usuários e moderação.
 6. Tente acessar `GET /api/usuarios` sem token: deve retornar 401; com usuário comum: 403.
 
 ## Segurança e observações
@@ -77,9 +83,9 @@ Substitua pelo e-mail da conta cadastrada. **Saia e entre novamente no app** par
 A Entrega 4 finaliza o aplicativo. Os requisitos são testar as funcionalidades e permissões, preparar o build Android, registrar evidências, revisar a documentação e enviar ao repositório atualizado.
 
 - **Checklist e evidências:** `docs/ENTREGA_4_CHECKLIST.md`
-- **Build APK Android com EAS:** `docs/BUILD_APK.md` e `eas.json`
+- **Build local do APK Android com Gradle:** `docs/BUILD_APK.md`
 - **Roteiro para a apresentação:** `docs/ROTEIRO_APRESENTACAO.md`
 
-**Atenção:** o APK deve ser compilado e testado após configurar uma URL da API acessível pelo Android; não existe APK pré-gerado neste ZIP. A API e o banco devem estar ativos para login, publicações e comentários. Para demonstrar a entrega, faça um commit/push da mesma versão usada no build e inclua o link do APK final.
+**Atenção:** o APK deve ser compilado e testado após configurar uma URL da API acessível pelo Android; consulte o checklist para o status do APK. A API e o banco devem estar ativos para login, publicações e comentários. Para demonstrar a entrega, faça um commit/push da mesma versão usada no build e inclua o link do APK final.
 
 **Segurança:** mantenha os dados sensíveis apenas em `.env`, que deve permanecer ignorado. Substitua qualquer credencial que tenha sido exposta em prints ou código anteriormente.

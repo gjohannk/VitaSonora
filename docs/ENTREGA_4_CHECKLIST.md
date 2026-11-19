@@ -23,16 +23,18 @@ Marque [x] **somente depois do teste prático**. Não declare um APK pronto apen
 - [ ] Mensagens de erro e confirmação de exclusão funcionam no navegador e no Android.
 
 ## Finalização
-- [ ] `npm test` na pasta backend passou.
-- [ ] `npx expo-doctor` não indicou bloqueio.
-- [ ] README e `eas.json` atualizados, sem senha nem token.
-- [ ] APK `.apk` gerado pelo EAS e instalado em um Android real.
+- [x] Os dois testes unitários de validação do backend passaram.
+- [ ] O Gradle concluiu `:app:assembleRelease`.
+- [ ] README e guia do APK atualizados, sem senha nem token.
+- [ ] APK compilado localmente com Gradle e instalado em um Android real.
 - [ ] Teste de cadastro, login e CRUD feito **no APK**, com API acessível.
 - [ ] Código e documentação da mesma versão enviados ao GitHub.
 - [ ] Link do APK e link do repositório anexados à entrega.
 - [ ] Apresentação ensaiada com o roteiro em `docs/ROTEIRO_APRESENTACAO.md`.
 
 ## Registro de testes
+
+Em 19/11/2026, o teste HTTP com MySQL local confirmou cadastro, login, JWT, CRUD de relatos, comentários e permissões. A transação foi revertida ao final. Os testes da interface e do APK têm registro próprio.
 | Data | Cenário | Resultado | Evidência | Observações |
 |---|---|---|---|---|
 | ____ | Cadastro/login | [ ] passou [ ] falhou | screenshot | |
@@ -40,3 +42,9 @@ Marque [x] **somente depois do teste prático**. Não declare um APK pronto apen
 | ____ | Comentários | [ ] passou [ ] falhou | screenshot | |
 | ____ | Admin/403 | [ ] passou [ ] falhou | HTTP/teste | |
 | ____ | APK instalado e conectado | [ ] passou [ ] falhou | foto/print | |
+
+## Versão entregue
+
+- Commit usado no Gradle: pendente.
+- APK e SHA-256: pendentes.
+- Teste em Android físico: pendente.

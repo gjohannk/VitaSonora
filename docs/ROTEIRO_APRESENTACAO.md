@@ -15,7 +15,7 @@ O VitaSonora é um espaço para compartilhar histórias sobre como a música inf
 ## 3. Demonstração (2 minutos)
 1. Mostrar tela inicial e Comunidade sem login.
 2. Criar usuário de demonstração (ou usar conta teste) e fazer login.
-3. Publicar, editar e excluir um **relato de teste**; abrir comentários.
+3. Publicar um relato de teste, comentar, editar e confirmar a exclusão.
 4. Mostrar que um usuário comum não pode modificar conteúdo de outro.
 5. Demonstrar a tela administrativa com conta de administrador previamente preparada.
 
@@ -28,7 +28,7 @@ O VitaSonora é um espaço para compartilhar histórias sobre como a música inf
 - `.env`, segredo JWT e senha MySQL não vão para o repositório.
 
 ## 5. Banco + GitHub + APK (1 minuto)
-Mostrar no Workbench as tabelas `usuarios`, `relatos`, `comentarios`; abrir histórico de commits do GitHub; mostrar APK **se tiver sido compilado e testado** e o endereço da API utilizado no dispositivo.
+Mostrar a estrutura das tabelas `usuarios`, `relatos` e `comentarios` no Workbench. Abrir o histórico no GitHub e, quando disponível, mostrar o APK e a página do build. Para demonstração em Wi-Fi, conferir antes se o celular consegue acessar a API.
 
 ## 6. Conclusão (30 segundos)
 Dizer o que foi entregue, as limitações (API requer servidor; dados de CPF pedem cuidados de privacidade) e possibilidades futuras (moderação, acessibilidade e hospedagem permanente).

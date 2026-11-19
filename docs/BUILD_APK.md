@@ -1,65 +1,37 @@
-# Como gerar o APK final do VitaSonora
+# Gerar o APK localmente
 
-Este projeto inclui `eas.json` com um perfil `preview` que produz um **APK** (e não AAB). O APK é gerado pelo serviço Expo EAS e **não** é incluído neste pacote.
+O Gradle compila um APK autônomo no computador. Para demonstração, o APK usa a assinatura de desenvolvimento gerada pelo Android SDK para o usuário local. Essa assinatura é adequada para instalação direta em aparelhos de teste.
 
-## 1. Antes de compilar: decidir onde ficará a API
+## Preparar o Windows
 
-O app depende de `Node.js/Express + MySQL`, que **não ficam dentro do APK**.
+1. Instale JDK 17 e o Android SDK com Android Platform 36, Build Tools 36.0.0, NDK 27.1.12297006 e CMake 3.22.1. Defina `JAVA_HOME` e `ANDROID_HOME` com as pastas instaladas.
+2. Na raiz, rode `npm ci`. O Gradle Wrapper baixa suas próprias dependências na primeira compilação. O build utiliza os arquivos da pasta `android` e as bibliotecas instaladas localmente.
 
-**Opção recomendada para avaliação:** disponibilizar a API em servidor com URL HTTPS acessível pelo Android, e banco MySQL conectado a ela. O computador pessoal com backend local é uma alternativa temporária somente quando o celular está na mesma rede e a configuração Android permite HTTP. Em nenhuma hipótese use `localhost` ou `10.0.2.2` em APK instalado em celular físico.
+## Escolher um endereço para a API
 
-A variável `EXPO_PUBLIC_API_URL` é **pública**, faz parte do app compilado, e deve ser uma URL da API **sem barra final**, por exemplo `https://api.exemplo.com`. Não coloque usuário/senha do MySQL ou `JWT_SECRET` nesse valor.
+- **Demonstração na mesma rede Wi-Fi**. Inicie a API e use o IPv4 real do computador com a porta da API. Verifique no navegador do telefone se `/api/saude` abre. Se a rede da escola isolar os aparelhos, use uma rede em que eles consigam se comunicar ou hospede a API. Use contas fictícias em HTTP porque senhas e tokens passam pela rede sem criptografia.
+- **Acesso pela internet**. Hospede a API com HTTPS e mantenha o MySQL acessível ao servidor Express. Informe a URL HTTPS real ao script. Nesse caso o manifesto desativa HTTP.
 
-## 2. No VS Code — pasta raiz do VitaSonora
+O endereço da API fica incorporado ao aplicativo. Uma troca de endereço requer recompilação. Use o endereço-base da API, sem o sufixo `/api` e sem credenciais.
 
-```bash
-npm install
-npx expo-doctor
-npm install -g eas-cli
-eas login
-eas build:configure
+## Compilar e instalar
+
+Na raiz, em PowerShell, execute o comando abaixo e informe o endereço real quando solicitado.
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\build-apk.ps1
 ```
 
-O `eas build:configure` pode alterar `app.json`/`eas.json` e vincular o projeto à tua conta Expo. Verifique que o perfil `preview` continua com `"android": {"buildType":"apk"}` e `"environment":"preview"`.
+O APK fica em `android/app/build/outputs/apk/release/app-release.apk`. O script exibe o caminho e o SHA-256 do arquivo. Anote também o commit usado, obtido com `git rev-parse HEAD`, e mantenha a árvore limpa ao produzir o APK final.
 
-## 3. Configurar a URL no EAS (preview)
+Transfira o arquivo ao celular. Abra-o no Android, autorize a instalação da fonte usada se o sistema pedir e abra o VitaSonora. Se uma instalação anterior usar outra chave de assinatura, teste em outro aparelho ou remova a anterior depois de preservar os dados locais necessários.
 
-Configure a variável no ambiente **preview** do Expo (substitua pela URL real):
+## Validar no aparelho
 
-```bash
-eas env:create --environment preview --name EXPO_PUBLIC_API_URL --value https://SUA-API-REAL.example --visibility plaintext
-```
+1. Abra a Comunidade e confira se os relatos carregam.
+2. Cadastre uma conta de demonstração, saia, entre novamente e reabra o app para verificar a sessão.
+3. Publique um relato, abra os detalhes, comente e edite. No diálogo de exclusão, teste cancelar e depois confirme.
+4. Com outra conta comum, confira que as ações aparecem apenas nos próprios relatos e comentários. Com uma conta de administrador, confira a tela Usuários e a moderação.
+5. Registre o resultado no checklist junto com o commit e a identificação do APK.
 
-Se a versão do CLI pedir formato diferente, use o painel do projeto em expo.dev > Environment variables > preview, ou consulte `eas env --help`. Confira com `eas env:list --environment preview`.
-
-## 4. Build APK
-
-```bash
-eas build --platform android --profile preview
-```
-
-Na primeira compilação, permita a criação de credenciais Android de assinatura pelo EAS quando solicitado. Quando a compilação **terminar com sucesso**, abra o link exibido, baixe o arquivo `.apk` e instale no Android compatível. O build exige conta Expo, internet e a compilação remota — não foi executado automaticamente aqui.
-
-## 5. Validar o APK
-
-1. Abra o APK no Android **sem Expo Go**.
-2. Acesse a Comunidade, cadastre uma conta de teste, faça login, publique um relato e comente.
-3. Teste permissão de usuário comum e administrador.
-4. Se aparecer **Sem conexão com a API**, o servidor precisa estar disponível ao dispositivo; verifique URL, HTTPS, internet/firewall e execução da API.
-5. Salve prints e o link do build da Expo.
-
-## 6. GitHub
-
-Depois de revisar os arquivos, execute na pasta correta do projeto:
-
-```bash
-git status
-git add README.md app.json eas.json docs/ENTREGA_4_CHECKLIST.md docs/BUILD_APK.md docs/ROTEIRO_APRESENTACAO.md
-git diff --cached --name-only
-git commit -m "Entrega 4 - documentacao final e configuracao APK"
-git push origin main
-```
-
-Não adicione `.env`, `node_modules`, senhas nem tokens.
-
-Referência: https://docs.expo.dev/build-reference/apk/
+[Ambiente Android no React Native](https://reactnative.dev/docs/0.81/set-up-your-environment)
