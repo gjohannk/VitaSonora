@@ -1,4 +1,4 @@
-# VitaSonora — Entrega 3
+# VitaSonora — Entrega 4 (versão final em preparação)
 
 Aplicação mobile sobre o impacto da música no bem-estar (ODS 3), construída sobre a Entrega 2. A loja JWT fornecida foi usada como referência de arquitetura, não como tema copiado.
 
@@ -71,3 +71,15 @@ Substitua pelo e-mail da conta cadastrada. **Saia e entre novamente no app** par
 - O logout remove o token do dispositivo; JWT previamente emitido pode continuar válido até vencer (8h), pois não há lista de revogação.
 - Avaliação precisa de execução local com MySQL; não há dados reais ou credenciais inclusos.
 - Para GitHub, não envie `.env`, credenciais ou `node_modules` e faça commit/push no seu próprio repositório.
+
+## Entrega 4: testes, APK e apresentação
+
+A Entrega 4 finaliza o aplicativo. Os requisitos são testar as funcionalidades e permissões, preparar o build Android, registrar evidências, revisar a documentação e enviar ao repositório atualizado.
+
+- **Checklist e evidências:** `docs/ENTREGA_4_CHECKLIST.md`
+- **Build APK Android com EAS:** `docs/BUILD_APK.md` e `eas.json`
+- **Roteiro para a apresentação:** `docs/ROTEIRO_APRESENTACAO.md`
+
+**Atenção:** o APK deve ser compilado e testado após configurar uma URL da API acessível pelo Android; não existe APK pré-gerado neste ZIP. A API e o banco devem estar ativos para login, publicações e comentários. Para demonstrar a entrega, faça um commit/push da mesma versão usada no build e inclua o link do APK final.
+
+**Segurança:** mantenha os dados sensíveis apenas em `.env`, que deve permanecer ignorado. Substitua qualquer credencial que tenha sido exposta em prints ou código anteriormente.
