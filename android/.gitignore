@@ -18,3 +18,6 @@ local.properties
 # Signing keys
 *.keystore
 *.jks
+
+# Kotlin build state
+.kotlin/
