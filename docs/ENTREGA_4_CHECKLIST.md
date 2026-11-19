@@ -24,9 +24,10 @@ Marque [x] **somente depois do teste prático**. Não declare um APK pronto apen
 
 ## Finalização
 - [x] Os dois testes unitários de validação do backend passaram.
-- [ ] O Gradle concluiu `:app:assembleRelease`.
-- [ ] README e guia do APK atualizados, sem senha nem token.
-- [ ] APK compilado localmente com Gradle e instalado em um Android real.
+- [x] O Gradle concluiu `:app:assembleRelease`.
+- [x] README e guia do APK atualizados, sem senha nem token.
+- [x] APK compilado localmente com Gradle, com assinatura verificada.
+- [ ] APK instalado em um Android físico.
 - [ ] Teste de cadastro, login e CRUD feito **no APK**, com API acessível.
 - [ ] Código e documentação da mesma versão enviados ao GitHub.
 - [ ] Link do APK e link do repositório anexados à entrega.
@@ -34,7 +35,7 @@ Marque [x] **somente depois do teste prático**. Não declare um APK pronto apen
 
 ## Registro de testes
 
-Em 19/11/2026, o teste HTTP com MySQL local confirmou cadastro, login, JWT, CRUD de relatos, comentários e permissões. A transação foi revertida ao final. Os testes da interface e do APK têm registro próprio.
+Em 19/11/2026, o teste HTTP com MySQL local confirmou cadastro, login, JWT, CRUD de relatos, comentários e permissões. A transação foi revertida ao final. No Edge, passaram cadastro, login, logout, restauração de sessão e cancelamento e confirmação da exclusão.
 | Data | Cenário | Resultado | Evidência | Observações |
 |---|---|---|---|---|
 | ____ | Cadastro/login | [ ] passou [ ] falhou | screenshot | |
@@ -45,6 +46,7 @@ Em 19/11/2026, o teste HTTP com MySQL local confirmou cadastro, login, JWT, CRUD
 
 ## Versão entregue
 
-- Commit usado no Gradle: pendente.
-- APK e SHA-256: pendentes.
-- Teste em Android físico: pendente.
+- Commit usado no Gradle: `bbc378a2c34b5f00b60dc84463ebba272320a896`.
+- APK local: `android/app/build/outputs/apk/release/app-release.apk`.
+- SHA-256: `D71DE391988C6F209F77B9B0701806D6321CC77123C117BE01EB6D23A353C3E6`.
+- Teste em Android físico: pendente. Nenhum aparelho foi detectado no ambiente.
