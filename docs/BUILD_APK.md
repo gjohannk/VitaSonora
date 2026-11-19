@@ -22,6 +22,8 @@ Na raiz, em PowerShell, execute o comando abaixo e informe o endereço real quan
 powershell -ExecutionPolicy Bypass -File .\scripts\build-apk.ps1
 ```
 
+Em caminhos profundos, o script tenta usar uma letra de unidade livre para evitar o limite de caminhos do Windows e desfaz o vínculo ao sair.
+
 O APK fica em `android/app/build/outputs/apk/release/app-release.apk`. O script exibe o caminho e o SHA-256 do arquivo. Anote também o commit usado, obtido com `git rev-parse HEAD`, e mantenha a árvore limpa ao produzir o APK final.
 
 Transfira o arquivo ao celular. Abra-o no Android, autorize a instalação da fonte usada se o sistema pedir e abra o VitaSonora. Se uma instalação anterior usar outra chave de assinatura, teste em outro aparelho ou remova a anterior depois de preservar os dados locais necessários.
