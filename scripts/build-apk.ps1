@@ -38,6 +38,14 @@ if ($projectRoot.Length -gt 45) {
 }
 
 try {
+    $autolinkingCache = Join-Path $buildRoot 'android/build/generated/autolinking/autolinking.json'
+    if (Test-Path -LiteralPath $autolinkingCache) {
+        $cachedConfig = Get-Content -Raw -LiteralPath $autolinkingCache | ConvertFrom-Json
+        if ($cachedConfig.root -ne $buildRoot) {
+            Remove-Item -LiteralPath $autolinkingCache
+        }
+    }
+
     Push-Location -LiteralPath (Join-Path $buildRoot 'android')
     try {
         & .\gradlew.bat :app:assembleRelease "-PvitasonoraHttpLocal=$allowHttp"
