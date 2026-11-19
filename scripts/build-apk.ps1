@@ -19,30 +19,33 @@ $env:NODE_ENV = 'production'
 $allowHttp = ($api.Scheme -eq 'http').ToString().ToLowerInvariant()
 
 $projectRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
+$apkPath = 'android/app/build/outputs/apk/release/app-release.apk'
 $buildRoot = $projectRoot
-$temporaryDrive = $null
-
-# CMake e Ninja podem exceder 260 caracteres em pastas Windows profundas.
-if ($projectRoot.Length -gt 45) {
-    $freeLetter = 'V', 'W', 'X', 'Y', 'Z' | Where-Object {
-        !(Get-PSDrive -Name $_ -ErrorAction SilentlyContinue)
-    } | Select-Object -First 1
-    if ($freeLetter) {
-        $driveName = "${freeLetter}:"
-        & subst.exe $driveName ([IO.Path]::GetDirectoryName($projectRoot))
-        if ($LASTEXITCODE -eq 0) {
-            $temporaryDrive = $driveName
-            $buildRoot = Join-Path "$temporaryDrive\" ([IO.Path]::GetFileName($projectRoot))
-        }
-    }
-}
+$temporaryRoot = $null
 
 try {
-    $autolinkingCache = Join-Path $buildRoot 'android/build/generated/autolinking/autolinking.json'
-    if (Test-Path -LiteralPath $autolinkingCache) {
-        $cachedConfig = Get-Content -Raw -LiteralPath $autolinkingCache | ConvertFrom-Json
-        if ($cachedConfig.root -ne $buildRoot) {
-            Remove-Item -LiteralPath $autolinkingCache
+    # Ninja no Windows precisa de um caminho curto para os objetos C++.
+    if ($projectRoot.Length -gt 45) {
+        $driveRoot = [IO.Path]::GetPathRoot($projectRoot)
+        $directoryName = 'vs4-' + [Guid]::NewGuid().ToString('N').Substring(0, 8)
+        $buildRoot = Join-Path $driveRoot $directoryName
+        $temporaryRoot = (New-Item -ItemType Directory -Path $buildRoot).FullName
+        $archive = Join-Path $buildRoot 'source.tar'
+
+        git -C $projectRoot diff --quiet HEAD --
+        if ($LASTEXITCODE -ne 0) { throw 'Salve as alteracoes versionadas em um commit antes de gerar o APK.' }
+        git -C $projectRoot archive --format=tar -o $archive HEAD
+        if ($LASTEXITCODE -ne 0) { throw 'Nao foi possivel preparar o commit para compilacao.' }
+
+        & tar.exe -xf $archive -C $buildRoot
+        if ($LASTEXITCODE -ne 0) { throw 'Nao foi possivel extrair os arquivos versionados.' }
+
+        Push-Location -LiteralPath $buildRoot
+        try {
+            npm.cmd ci --no-audit --no-fund --include=dev
+            if ($LASTEXITCODE -ne 0) { throw 'Nao foi possivel instalar as dependencias da compilacao.' }
+        } finally {
+            Pop-Location
         }
     }
 
@@ -53,10 +56,22 @@ try {
     } finally {
         Pop-Location
     }
-} finally {
-    if ($temporaryDrive) { & subst.exe $temporaryDrive /d }
-}
 
-$apk = Get-Item -LiteralPath (Join-Path $projectRoot 'android/app/build/outputs/apk/release/app-release.apk')
-Write-Output $apk.FullName
-Get-FileHash -LiteralPath $apk.FullName -Algorithm SHA256
+    $outputPath = Join-Path $projectRoot $apkPath
+    if ($temporaryRoot) {
+        New-Item -ItemType Directory -Path (Split-Path -Parent $outputPath) -Force | Out-Null
+        Copy-Item -LiteralPath (Join-Path $buildRoot $apkPath) -Destination $outputPath
+    }
+    $apk = Get-Item -LiteralPath $outputPath
+    Write-Output $apk.FullName
+    Get-FileHash -LiteralPath $apk.FullName -Algorithm SHA256
+} finally {
+    if ($temporaryRoot) {
+        $resolved = (Resolve-Path -LiteralPath $temporaryRoot).ProviderPath
+        if ($resolved -eq $temporaryRoot -and
+            (Split-Path -Parent $resolved) -eq [IO.Path]::GetPathRoot($projectRoot) -and
+            (Split-Path -Leaf $resolved) -match '^vs4-[0-9a-f]{8}$') {
+            Remove-Item -LiteralPath $resolved -Recurse -Force -ErrorAction Continue
+        }
+    }
+}

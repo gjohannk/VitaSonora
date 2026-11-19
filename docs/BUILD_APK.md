@@ -22,7 +22,7 @@ Na raiz, em PowerShell, execute o comando abaixo e informe o endereço real quan
 powershell -ExecutionPolicy Bypass -File .\scripts\build-apk.ps1
 ```
 
-Em caminhos profundos, o script tenta usar uma letra de unidade livre para evitar o limite de caminhos do Windows e desfaz o vínculo ao sair.
+Em caminhos profundos, o script compila uma cópia temporária do commit em uma pasta curta na raiz da unidade. Use uma unidade em que seja possível criar essa pasta e faça commit das alterações antes de rodar. O APK volta para a pasta original e a cópia temporária é removida.
 
 O APK fica em `android/app/build/outputs/apk/release/app-release.apk`. O script exibe o caminho e o SHA-256 do arquivo. Anote também o commit usado, obtido com `git rev-parse HEAD`, e mantenha a árvore limpa ao produzir o APK final.
 
