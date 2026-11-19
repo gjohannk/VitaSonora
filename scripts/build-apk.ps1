@@ -71,7 +71,11 @@ try {
         if ($resolved -eq $temporaryRoot -and
             (Split-Path -Parent $resolved) -eq [IO.Path]::GetPathRoot($projectRoot) -and
             (Split-Path -Leaf $resolved) -match '^vs4-[0-9a-f]{8}$') {
-            Remove-Item -LiteralPath $resolved -Recurse -Force -ErrorAction Continue
+            try {
+                [IO.Directory]::Delete(('\\?\' + $resolved), $true)
+            } catch {
+                Write-Warning "Nao foi possivel limpar a pasta temporaria $resolved."
+            }
         }
     }
 }
