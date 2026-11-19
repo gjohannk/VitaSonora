@@ -29,10 +29,10 @@ if ($projectRoot.Length -gt 45) {
     } | Select-Object -First 1
     if ($freeLetter) {
         $driveName = "${freeLetter}:"
-        & subst.exe $driveName $projectRoot
+        & subst.exe $driveName ([IO.Path]::GetDirectoryName($projectRoot))
         if ($LASTEXITCODE -eq 0) {
             $temporaryDrive = $driveName
-            $buildRoot = "$temporaryDrive\"
+            $buildRoot = Join-Path "$temporaryDrive\" ([IO.Path]::GetFileName($projectRoot))
         }
     }
 }
